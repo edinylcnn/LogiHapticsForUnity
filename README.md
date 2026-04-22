@@ -12,7 +12,7 @@
 Bir Unity geliştiricisi şu iki adımla haptic desteğini aktive eder:
 
 1. GitHub Releases'ten `LogiHapticsUnity_x.y.lplug4` indir → çift tıkla (Logi Options+ kurar)
-2. Unity Package Manager'a `com.logihapticsunity` ekle → `LogiHapticsUnity.Trigger(HapticEvent.BoxOpen)` yaz
+2. Unity Package Manager'a `com.logihapticsunity` ekle → `LogiHapticsUnity.Trigger(HapticEvent.Click)` yaz
 
 Firewall onayı yok. Domain yok. Sertifika yok. Port ayarı yok.
 
@@ -43,18 +43,19 @@ MX Master 4 — haptic aktuatör
 
 ## Desteklenen Haptic Event'ler
 
-Başlangıç seti (genişletilebilir):
+Tür bağımsız, her oyunda kullanılabilecek genel amaçlı başlangıç seti (genişletilebilir):
 
-| Event | Waveform |
-|-------|----------|
-| `box_open` | sharp_collision |
-| `merge` | completed |
-| `rare_drop` | firework |
-| `level_up` | happy_alert |
-| `error` | mad |
-| `unlock` | damp_state_change |
-| `tap` | subtle_collision |
-| `purchase` | jingle |
+| Event | Waveform | Tipik Kullanım |
+|-------|----------|----------------|
+| `Click` | subtle_collision | UI etkileşimi, buton, menü |
+| `Confirm` | jingle | Onay, satın alma, kaydet |
+| `Success` | completed | Başarılı işlem, görev tamamlama |
+| `Failure` | mad | Hatalı aksiyon, yanlış giriş |
+| `Warning` | damp_state_change | Uyarı, kritik eşik |
+| `Notification` | happy_alert | Mesaj, bildirim, ipucu |
+| `Achievement` | firework | Ödül, seviye atlama, nadir olay |
+| `ImpactLight` | subtle_collision | Hafif temas, küçük etki |
+| `ImpactMedium` | sharp_collision | Standart darbe, çarpışma |
 
 Kendi event'lerini eklemek için: `HapticEvent` enum'una sabit ekle, `HapticMapper`'da waveform tanımla.
 
@@ -64,11 +65,11 @@ Kendi event'lerini eklemek için: `HapticEvent` enum'una sabit ekle, `HapticMapp
 
 ```csharp
 // Tek satır — her yerden
-LogiHapticsUnity.Trigger(HapticEvent.BoxOpen);
+LogiHapticsUnity.Trigger(HapticEvent.Click);
 
 // Manuel DI için
 IHapticService haptic = new LogiHapticsService();
-haptic.Trigger(HapticEvent.Merge);
+haptic.Trigger(HapticEvent.Success);
 ```
 
 Plugin kurulu değilse `NullHapticsService`'e düşer — oyun normal şekilde çalışır, hata fırlatmaz.

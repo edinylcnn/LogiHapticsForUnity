@@ -18,9 +18,9 @@
   "license": "MIT",
   "samples": [
     {
-      "displayName": "Merge Game Example",
-      "description": "Örnek entegrasyon — merge event'lerinde haptic tetikleme.",
-      "path": "Samples~/MergeGameExample"
+      "displayName": "Basic Usage",
+      "description": "Genel amaçlı event'ler için örnek entegrasyon (Click, Success, Impact vb.).",
+      "path": "Samples~/BasicUsage"
     }
   ]
 }

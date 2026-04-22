@@ -15,7 +15,7 @@ https://github.com/edinylcnn/LogiHapticsForUnity.git?path=/unity-package
 ## Kullanım
 
 ```csharp
-LogiHapticsUnity.Trigger(HapticEvent.BoxOpen);
+LogiHapticsUnity.Trigger(HapticEvent.Click);
 ```
 
 ## Yapı
