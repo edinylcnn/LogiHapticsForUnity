@@ -1,7 +1,7 @@
 # LogiHapticsForUnity
 
-> MX Master 4 (ve destekleyen Logitech cihazlar) için Unity oyunlarına
-> tek adımda haptic feedback desteği veren açık kaynak araç seti.
+> MX Master 4 için Unity oyunlarına tek adımda haptic feedback desteği
+> veren açık kaynak araç seti.
 
 **Durum:** Aktif geliştirme — henüz release yok.
 
@@ -89,8 +89,7 @@ Detaylı plan: `LogiHapticsForUnity-Plan.md` (repo dışında tutuluyor).
 
 ## Cihaz Uyumluluğu
 
-- **İlk hedef:** MX Master 4
-- **Sonraki sürümler:** Logi Actions SDK destekliyorsa MX Master 3S, MX Anywhere 3
+Yalnızca **MX Master 4** desteklenir — Logi Actions SDK'nın haptic API'si şu an yalnızca bu cihazda çalışıyor.
 
 ---
 
