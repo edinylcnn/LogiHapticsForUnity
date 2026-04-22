@@ -10,7 +10,7 @@ description: >
   SDK haptic waveforms.
 
 pluginFileName: LogiHapticsUnityPlugin.dll
-version: 0.0.1
+version: 0.1.0
 author: Edin Yalçın
 copyright: Copyright © 2026 Edin Yalçın. MIT License.
 
