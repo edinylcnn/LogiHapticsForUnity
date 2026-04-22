@@ -2,9 +2,9 @@
 
 [English](README.md) · [Türkçe](README.tr.md)
 
-Unity-side UPM package. Sends events to [`logi-plugin`](../logi-plugin) over a Named Pipe (Windows) or a Unix Domain Socket (macOS/Linux).
+Unity tarafındaki UPM paketi. Windows'ta Named Pipe, macOS/Linux'ta Unix Domain Socket üzerinden [`logi-plugin`](../logi-plugin)'e event gönderir.
 
-## Install
+## Kurulum
 
 Unity Package Manager → `+` → **Add package from git URL**:
 
@@ -12,54 +12,54 @@ Unity Package Manager → `+` → **Add package from git URL**:
 https://github.com/edinylcnn/LogiHapticsForUnity.git?path=/unity-package
 ```
 
-## Usage
+## Kullanım
 
 ```csharp
 using LogiHaptics;
 
-// One-liner
+// Tek satır
 LogiHapticsUnity.Trigger(HapticEvent.Click);
 
-// Raw waveform (one of the 15 SDK waveforms)
+// Ham waveform (15 SDK waveform'undan biri)
 LogiHapticsUnity.TriggerRaw("firework");
 
-// Manual DI
+// Manuel DI
 IHapticService haptic = new LogiHapticsService();
 haptic.Trigger(HapticEvent.Success);
 ```
 
-Use `LogiHapticsUnity.IsAvailable` to check whether the plugin is installed — if `false`, you can point the user to the install guide. Calls are safe either way: the fallback is a no-op, so nothing crashes.
+Plugin kurulu mu diye kontrol etmek için `LogiHapticsUnity.IsAvailable` — `false` ise kullanıcıya kurulum rehberini gösterebilirsin. Çağrılar her durumda güvenli: fallback no-op, hiçbir şey çökmez.
 
-## Editor test panel
+## Editor test paneli
 
 **Window → LogiHaptics → Test Panel**
 
-- Pipe connection status + last error
+- Pipe bağlantı durumu + son hata
 - Temp path
-- Per-event trigger buttons
+- Her event için tetik butonu
 
-Surfaces a `Could not connect — ...` message when the plugin is not running.
+Plugin çalışmıyorsa `Could not connect — ...` mesajı burada görünür.
 
-## Layout
+## Dizin yapısı
 
 ```
 unity-package/
 ├── Runtime/
 │   ├── IHapticService.cs
-│   ├── HapticEvent.cs                ← 9 generic events
+│   ├── HapticEvent.cs                ← 9 generic event
 │   ├── LogiHapticsService.cs         ← pipe (Windows) / Unix socket (mac/linux) client
 │   ├── NullHapticsService.cs         ← fallback
 │   ├── LogiHapticsUnity.cs           ← static façade
 │   └── LogiHaptics.Runtime.asmdef
 ├── Editor/
-│   ├── LogiHapticsUnityChecker.cs    ← test panel
+│   ├── LogiHapticsUnityChecker.cs    ← test paneli
 │   └── LogiHaptics.Editor.asmdef
 ├── Samples~/
-│   └── BasicUsage/                   ← keys 1-5 trigger events
+│   └── BasicUsage/                   ← 1-5 tuşlarıyla event demo
 └── package.json
 ```
 
-## Events
+## Event'ler
 
 | Event | Waveform |
 |---|---|
@@ -73,9 +73,9 @@ unity-package/
 | `ImpactLight` | subtle_collision |
 | `ImpactMedium` | sharp_collision |
 
-Raw waveforms you can pass to `TriggerRaw`: `sharp_collision`, `sharp_state_change`, `knock`, `damp_collision`, `mad`, `ringing`, `subtle_collision`, `completed`, `jingle`, `damp_state_change`, `firework`, `happy_alert`, `wave`, `angry_alert`, `square`.
+`TriggerRaw`'a geçirebileceğin ham waveform'lar: `sharp_collision`, `sharp_state_change`, `knock`, `damp_collision`, `mad`, `ringing`, `subtle_collision`, `completed`, `jingle`, `damp_state_change`, `firework`, `happy_alert`, `wave`, `angry_alert`, `square`.
 
-## Platform support
+## Platform desteği
 
 | Platform | Haptic |
 |---|:-:|
@@ -84,4 +84,4 @@ Raw waveforms you can pass to `TriggerRaw`: `sharp_collision`, `sharp_state_chan
 | Linux Standalone + Editor | ✅ |
 | iOS / Android / WebGL / Console | ➖ (no-op fallback) |
 
-The runtime asmdef sets `noEngineReferences: true` — plain .NET, compiles under Mono and IL2CPP.
+Runtime asmdef'i `noEngineReferences: true` — saf .NET, Mono ve IL2CPP'de derlenir.

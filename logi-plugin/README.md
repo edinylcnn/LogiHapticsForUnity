@@ -1,28 +1,30 @@
 # logi-plugin
 
-Logi Options+ plugin — Named Pipe sunucusu açar, gelen event'i Logi Actions SDK ile haptic waveform olarak MX Master 4'e tetikler.
+[English](README.md) · [Türkçe](README.tr.md)
 
-## Gereksinimler
+Logi Options+ plugin — opens a pipe server, forwards events to Logi Actions SDK haptic waveforms on the MX Master 4.
 
-1. **Logi Options+** kurulu olmalı (Logi Plugin Service + `PluginApi.dll` için)
-   - Win: `C:\Program Files\Logi\LogiPluginService\PluginApi.dll`
+## Requirements
+
+1. **Logi Options+** installed (provides the Logi Plugin Service + `PluginApi.dll`)
+   - Windows: `C:\Program Files\Logi\LogiPluginService\PluginApi.dll`
    - macOS: `/Applications/Utilities/LogiPluginService.app/Contents/MonoBundle/PluginApi.dll`
 2. **.NET 8 SDK**
-3. **LogiPluginTool** global aracı (paketleme için):
+3. **LogiPluginTool** global .NET tool (for packaging):
 
    ```bash
    dotnet tool install --global LogiPluginTool
    ```
 
-## Yapı
+## Layout
 
 ```
 logi-plugin/
 ├── src/
 │   ├── Plugin.cs                         ← Loupedeck.Plugin entry
 │   ├── Application.cs                    ← ClientApplication companion
-│   ├── PipeServer.cs                     ← Named Pipe / Unix socket sunucusu
-│   ├── HapticMapper.cs                   ← event → waveform eşleme
+│   ├── PipeServer.cs                     ← Named Pipe / Unix socket server
+│   ├── HapticMapper.cs                   ← event → waveform mapping
 │   ├── PluginLog.cs                      ← SDK log wrapper
 │   ├── LogiHapticsUnity.Plugin.csproj
 │   └── package/
@@ -30,24 +32,22 @@ logi-plugin/
 │       │   ├── LoupedeckPackage.yaml     ← manifest (plugin4, HasHapticsMapping)
 │       │   └── Icon256x256.png           ← placeholder
 │       └── events/
-│           ├── DefaultEventSource.yaml   ← 15 waveform event'i
+│           ├── DefaultEventSource.yaml   ← 15 waveform events
 │           └── extra/
-│               └── eventMapping.yaml    ← haptic UI kaydı (haptics block)
-└── build/                                ← .lplug4 çıktıları
+│               └── eventMapping.yaml     ← haptic UI registration (haptics block)
+└── build/                                ← .lplug4 output
 ```
 
-## Geliştirme
+## Development
 
 ```bash
 cd logi-plugin/src
 dotnet build -c Release
 ```
 
-Build tamamlanınca csproj otomatik olarak Logi Plugin Service'in `Plugins/` dizinine bir `.link` dosyası yazar ve `loupedeck:plugin/LogiHapticsUnity/reload` URL'sini tetikler. Logi Options+ plugin'i anında reload eder.
+The csproj automatically writes a `.link` file into the Logi Plugin Service's `Plugins/` directory and triggers `loupedeck:plugin/LogiHapticsUnity/reload`, so Logi Options+ hot-reloads the plugin.
 
-## Paketleme (.lplug4)
-
-Tek komutla:
+## Packaging (.lplug4)
 
 ```bash
 cd logi-plugin/src
@@ -55,49 +55,49 @@ dotnet build -c Release
 logiplugintool pack ../bin/Release ../build/LogiHapticsUnity_0.0.1.lplug4
 ```
 
-Çıktı: `logi-plugin/build/LogiHapticsUnity_<version>.lplug4`. Çift tıklayarak kurulabilir.
+Output: `logi-plugin/build/LogiHapticsUnity_<version>.lplug4` — double-clickable installer.
 
-## Release (GitHub'a yayınlama)
+## Releasing
 
-PluginApi.dll Logi Options+ ile geldiği için CI'da üretilemiyor — release'i lokal script ile keseriz. Repo root'ta:
+`PluginApi.dll` ships with Logi Options+, so it cannot be fetched in CI. Releases are cut locally from the repo root:
 
 ```bash
 ./scripts/release-plugin.sh 0.1.0
 ```
 
-Script şunları yapar:
-1. Manifest version'unu senkronize eder, commit + push
-2. `dotnet build -c Release`
-3. `logiplugintool pack` → `.lplug4`
-4. `plugin-v0.1.0` tag'ı oluşturup push eder
-5. `gh release create` ile GitHub Release açar ve `.lplug4`'ü asset olarak ekler
+The script:
+1. Syncs the manifest version and pushes the commit
+2. Runs `dotnet build -c Release`
+3. Packs the `.lplug4`
+4. Creates and pushes `plugin-v<version>` tag
+5. Creates a GitHub Release with the `.lplug4` attached as an asset
 
-Gereksinimler: `dotnet`, `logiplugintool`, `gh` (GitHub CLI), `git` yüklü ve çalışma ağacı temiz olmalı.
+Requirements: `dotnet`, `logiplugintool`, `gh` (GitHub CLI), a clean working tree.
 
-## Nasıl Çalışır?
+## How it works
 
-1. `Load()` → 15 haptic waveform'u `PluginEvents.AddEvent` ile kaydeder, Named Pipe server başlatır
-2. Unity tarafından `"success"` gibi bir event adı pipe'a yazılır
-3. `HapticMapper` event adını SDK waveform'una çevirir (`success → completed`)
-4. `PluginEvents.RaiseEvent("completed")` → MX Master 4 haptic aktuatör tetiklenir
+1. `Load()` registers the 15 haptic waveforms via `PluginEvents.AddEvent` and starts the pipe server.
+2. The Unity client writes an event name (e.g. `"success"`) to the pipe.
+3. `HapticMapper` resolves it to an SDK waveform (e.g. `success → completed`).
+4. `PluginEvents.RaiseEvent("completed")` fires the haptic pulse on the MX Master 4.
 
-## Haptic UI Kaydı İçin Gerekli Meta
+## Haptic UI registration
 
-Logi Options+'ın **Haptic Feedback** ekranında plugin'in görünmesi için manifest ve event tarafında ikisi de olmalı:
+Two files must line up or Logi Options+ will not show the plugin on its **Haptic Feedback** screen:
 
-1. `LoupedeckPackage.yaml` → `pluginCapabilities` listesinde **`HasHapticsMapping`** (plural "s") — `HasHapticMapping` tek başına yeterli değil
-2. `events/extra/eventMapping.yaml` → `haptics:` block'u her waveform için `DEFAULT: <waveform>` eşlemesi içerir
+1. `LoupedeckPackage.yaml` → `pluginCapabilities` must include **`HasHapticsMapping`** (note the plural "s"). `HasHapticMapping` alone is not enough.
+2. `events/extra/eventMapping.yaml` → a `haptics:` block with `DEFAULT: <waveform>` for every waveform the plugin registers.
 
-Bu ikisi olmadan event'ler pipe'a düşer ama cihaz haptic tetiklemez, çünkü kullanıcı Logi Options+'dan plugin'i haptic çıkışına bağlayamaz.
+Without both, events still flow through the pipe but the mouse never vibrates, because the user has no way to enable them in Logi Options+.
 
-## Platform Notu (macOS)
+## macOS note
 
-`.NET`'in `NamedPipeServerStream`'i macOS'ta `$TMPDIR/CoreFxPipe_<name>` path'inde Unix Domain Socket açar. `Dispose()` socket dosyasını silmez — plugin reload'larında yeni instance bind edemez (`IO_AllPipeInstancesAreBusy`). `PipeServer` bu durumu yakalayıp socket'ı explicit unlink edip retry yapıyor.
+`.NET`'s `NamedPipeServerStream` opens a Unix Domain Socket at `$TMPDIR/CoreFxPipe_<name>` on macOS. `Dispose()` does not remove the socket file, which blocks the next plugin instance from binding (`IO_AllPipeInstancesAreBusy`). `PipeServer` catches that error, unlinks the socket explicitly, and retries.
 
-## Waveform Listesi
+## Waveforms
 
-15 SDK waveform'u: `sharp_collision`, `sharp_state_change`, `knock`, `damp_collision`, `mad`, `ringing`, `subtle_collision`, `completed`, `jingle`, `damp_state_change`, `firework`, `happy_alert`, `wave`, `angry_alert`, `square`.
+15 SDK waveforms: `sharp_collision`, `sharp_state_change`, `knock`, `damp_collision`, `mad`, `ringing`, `subtle_collision`, `completed`, `jingle`, `damp_state_change`, `firework`, `happy_alert`, `wave`, `angry_alert`, `square`.
 
-Unity tarafı ister `HapticEvent` enum'u kullanır (9 generic event), ister `TriggerRaw("firework")` ile doğrudan waveform adı gönderir.
+The Unity side can use the `HapticEvent` enum (9 generic events) or `TriggerRaw("firework")` to send a waveform name directly.
 
-SDK dokümantasyonu: https://logitech.github.io/actions-sdk-docs/
+SDK docs: https://logitech.github.io/actions-sdk-docs/

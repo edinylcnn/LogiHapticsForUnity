@@ -1,154 +1,133 @@
 # LogiHapticsForUnity
 
-> MX Master 4 için Unity oyunlarına tek satırda haptic feedback desteği
-> veren açık kaynak araç seti.
+[English](README.md) · [Türkçe](README.tr.md)
 
-**Durum:** Çalışır — Faz 1-2 gerçek cihazda doğrulandı, Faz 3 release otomasyonu bekliyor.
+> One-line haptic feedback for Unity games on the **Logitech MX Master 4** — no ports, no certificates, no domain setup.
+
+```csharp
+using LogiHaptics;
+
+LogiHapticsUnity.Trigger(HapticEvent.Click);
+```
 
 ---
 
-## Kurulum (3 adım)
+## Install (4 steps)
 
-1. **[Logi Options+](https://www.logitech.com/software/logi-options-plus)** kurulu olsun (MX Master 4 ile zaten geliyor)
-2. **GitHub Releases**'ten `LogiHapticsUnity_x.y.lplug4` indir → çift tıkla → Logi Options+ plugin'i kurar
-3. **Unity Package Manager** → `+` → Add package from git URL:
+1. Make sure **[Logi Options+](https://www.logitech.com/software/logi-options-plus)** is installed (it ships with the MX Master 4).
+2. Download **`LogiHapticsUnity_x.y.lplug4`** from [Releases](https://github.com/edinylcnn/LogiHapticsForUnity/releases) → double-click → Logi Options+ installs the plugin.
+3. In Unity, open **Package Manager** → `+` → **Add package from git URL**:
 
    ```
    https://github.com/edinylcnn/LogiHapticsForUnity.git?path=/unity-package
    ```
 
-4. Kodda:
+4. Call it from anywhere:
 
    ```csharp
    LogiHapticsUnity.Trigger(HapticEvent.Click);
    ```
 
-> **Haptic hissetmiyorsan** — Logi Options+ → MX Master 4 → **Haptic Feedback** sekmesinde **"LogiHaptics for Unity"** toggle'ının açık olduğunu doğrula (kurulumdan sonra default açık gelir ama kullanıcı daha önce kapatmış olabilir).
-
-Firewall onayı yok. Domain yok. Sertifika yok. Port ayarı yok.
+If you don't feel anything, check Logi Options+ → MX Master 4 → **Haptic Feedback** and confirm the **"LogiHaptics for Unity"** toggle is on (it is on by default after install).
 
 ---
 
-## Mimari
+## Events
 
-```
-Unity Oyunu
-    │
-    │  Windows: Named Pipe  \\.\pipe\LogiHapticsUnity
-    │  macOS/Linux: Unix Domain Socket  $TMPDIR/CoreFxPipe_LogiHapticsUnity
-    ▼
-LogiHapticsUnity Plugin  (Logi Options+ içinde — .lplug4)
-    │
-    │  PluginEvents.RaiseEvent(waveform)
-    ▼
-MX Master 4 haptic aktuatör
-```
+Nine game-agnostic events mapped to Logi's haptic waveforms. Extend freely.
 
-İki bileşenli monorepo:
+| Event | Waveform | Typical use |
+|-------|----------|-------------|
+| `Click` | subtle_collision | UI interaction, button, menu |
+| `Confirm` | jingle | Confirm, purchase, save |
+| `Success` | completed | Task completed, correct answer |
+| `Failure` | mad | Wrong action, invalid input |
+| `Warning` | damp_state_change | Warning, critical threshold |
+| `Notification` | happy_alert | Message, tip, notification |
+| `Achievement` | firework | Reward, level up, rare drop |
+| `ImpactLight` | subtle_collision | Light touch, minor hit |
+| `ImpactMedium` | sharp_collision | Standard impact, collision |
 
-| Klasör | İçerik | Dağıtım |
-|---|---|---|
-| [`logi-plugin/`](logi-plugin/) | Logi Options+ plugin (C#, Loupedeck.Plugin SDK) | `.lplug4` — GitHub Releases |
-| [`unity-package/`](unity-package/) | Unity Package (UPM) — `com.logihapticsunity` | Git URL / OpenUPM |
-
-### Neden Unix Domain Socket?
-
-Unity'nin Mono runtime'ı macOS'ta `NamedPipeClientStream`'i `.NET`'in beklediği `$TMPDIR/CoreFxPipe_<name>` path'ine götürmüyor. `UnixDomainSocketEndPoint` ile doğrudan bağlanıp bu tutarsızlığı aşıyoruz. Windows'ta klasik Named Pipe kullanılıyor.
-
----
-
-## Desteklenen Event'ler
-
-Tür bağımsız, her oyunda kullanılabilecek genel amaçlı başlangıç seti:
-
-| Event | Waveform | Tipik Kullanım |
-|-------|----------|----------------|
-| `Click` | subtle_collision | UI etkileşimi, buton, menü |
-| `Confirm` | jingle | Onay, satın alma, kaydet |
-| `Success` | completed | Başarılı işlem, görev tamamlama |
-| `Failure` | mad | Hatalı aksiyon, yanlış giriş |
-| `Warning` | damp_state_change | Uyarı, kritik eşik |
-| `Notification` | happy_alert | Mesaj, bildirim, ipucu |
-| `Achievement` | firework | Ödül, seviye atlama, nadir olay |
-| `ImpactLight` | subtle_collision | Hafif temas, küçük etki |
-| `ImpactMedium` | sharp_collision | Standart darbe, çarpışma |
-
-Ham waveform ismi göndermek istersen:
+Need a specific waveform? Send one of the 15 SDK waveform ids directly:
 
 ```csharp
 LogiHapticsUnity.TriggerRaw("firework");
 ```
 
-15 SDK waveform'unun tam listesi: `sharp_collision`, `sharp_state_change`, `knock`, `damp_collision`, `mad`, `ringing`, `subtle_collision`, `completed`, `jingle`, `damp_state_change`, `firework`, `happy_alert`, `wave`, `angry_alert`, `square`.
+Full waveform list: `sharp_collision`, `sharp_state_change`, `knock`, `damp_collision`, `mad`, `ringing`, `subtle_collision`, `completed`, `jingle`, `damp_state_change`, `firework`, `happy_alert`, `wave`, `angry_alert`, `square`.
 
 ---
 
-## Kullanım
+## How it works
 
-```csharp
-using LogiHaptics;
-
-// Tek satır — her yerden (lazy singleton)
-LogiHapticsUnity.Trigger(HapticEvent.Click);
-
-// Manuel DI için
-IHapticService haptic = new LogiHapticsService();
-haptic.Trigger(HapticEvent.Success);
+```
+Unity game
+    │
+    │  Windows:      Named Pipe \\.\pipe\LogiHapticsUnity
+    │  macOS/Linux:  Unix Domain Socket  $TMPDIR/CoreFxPipe_LogiHapticsUnity
+    ▼
+LogiHapticsUnity plugin  (runs inside Logi Options+ — .lplug4)
+    │
+    │  Loupedeck.Plugin / PluginEvents.RaiseEvent(waveform)
+    ▼
+MX Master 4 haptic actuator
 ```
 
-Plugin kurulu değilse `Connect` 200ms timeout'a düşer, `LastError` set edilir, **oyun çökmez** — haptic sessizce skip edilir.
+The repo is a monorepo:
 
-### Editor Test Paneli
+| Folder | Contents | Ships as |
+|---|---|---|
+| [`logi-plugin/`](logi-plugin/) | Logi Options+ plugin (C#, Loupedeck.Plugin SDK) | `.lplug4` — GitHub Releases |
+| [`unity-package/`](unity-package/) | Unity Package — `com.logihapticsunity` | Unity Package Manager (git URL) |
 
-Menü: **Window → LogiHaptics → Test Panel**
+### Why Unix Domain Socket on macOS/Linux?
 
-- Pipe connection durumu + Last error
-- Her event için tek-tık tetik butonu
-- Temp path gösterimi (debug için)
+Unity's Mono runtime does not target `$TMPDIR/CoreFxPipe_<name>` the way .NET's `NamedPipeClientStream` does on the plugin side. The client bypasses that abstraction and connects to the socket directly, which keeps the two sides in sync. Windows still uses a classic Named Pipe.
 
 ---
 
-## Platform Matrisi
+## Platform support
 
-| Platform | Haptic | Not |
+| Platform | Haptic | Notes |
 |---|:-:|---|
-| Windows Standalone | ✅ | `NamedPipeClientStream` |
-| macOS Standalone | ✅ | `UnixDomainSocketEndPoint` |
-| Linux Standalone | ✅ | `UnixDomainSocketEndPoint` |
-| Unity Editor (Win/Mac/Linux) | ✅ | Standalone ile aynı |
-| iOS / Android / WebGL / Console | ➖ | Sessiz fallback, oyun çökmez |
+| Windows Standalone + Editor | ✅ | `NamedPipeClientStream` |
+| macOS Standalone + Editor | ✅ | `UnixDomainSocketEndPoint` |
+| Linux Standalone + Editor | ✅ | `UnixDomainSocketEndPoint` |
+| iOS / Android / WebGL / Console | ➖ | No-op fallback, game keeps running |
 
-Build'de `IL2CPP` ve `Mono` scripting backend'lerinin ikisinde de çalışır — runtime asmdef `noEngineReferences: true` ile saf .NET.
+The Unity runtime assembly has `noEngineReferences: true` — it is plain .NET and compiles under both Mono and IL2CPP.
 
----
-
-## Son Kullanıcı Dağıtımı
-
-Oyununu yayınladığında son kullanıcı için kurulum adımı:
-
-1. Logi Options+ kurulu (MX Master 4 kullanıcılarında zaten var)
-2. `.lplug4` dosyanı indir + çift tıkla
-3. Logi Options+ → MX Master 4 → Haptic Feedback → toggle
-
-Bu adımları oyunun içinde bir "Haptic Ayarları" sayfasına yazabilirsin. `LogiHapticsUnity.IsAvailable` false ise kullanıcıya kurulum linki göster.
+If the plugin is not installed, `Connect` times out in 200 ms, `LogiHapticsUnity.IsAvailable` returns `false`, and calls silently do nothing — your game never crashes.
 
 ---
 
-## Yol Haritası
+## Editor test panel
 
-- [x] **Faz 1 — Logi Plugin:** Loupedeck.Plugin SDK, Named Pipe server, event → waveform mapping, haptic UI kaydı (`HasHapticsMapping` + `eventMapping.yaml`), `.lplug4` build
-- [x] **Faz 2 — Unity Package:** `HapticEvent` enum, Unix Domain Socket / Named Pipe client, static façade, Editor test paneli, Samples
-- [ ] **Faz 3 — Paketleme & Dağıtım:** `plugin-v*` / `unity-v*` tag'lerinde GitHub Actions release, OpenUPM kaydı
-- [ ] **Faz 4 — Dokümantasyon:** Kurulum gif'i, ekran görüntüleri, event/waveform ekleme rehberi
+**Window → LogiHaptics → Test Panel** opens a window that shows the pipe connection status, last error, temp path, and a trigger button per event — no scene setup needed.
 
 ---
 
-## Cihaz Uyumluluğu
+## Shipping this in your game
 
-Yalnızca **MX Master 4** desteklenir — Logi Actions SDK'nın haptic API'si şu an yalnızca bu cihazda çalışıyor.
+End users need the plugin too. A good pattern:
+
+```csharp
+if (!LogiHapticsUnity.IsAvailable)
+{
+    // Show a one-time install hint with a link to the .lplug4 release.
+}
+```
+
+Then call `LogiHapticsUnity.Trigger(...)` freely — it is safe whether the plugin is there or not.
 
 ---
 
-## Lisans
+## Device support
 
-MIT — detay için [LICENSE](LICENSE).
+**MX Master 4 only.** Logi's haptic API currently does not expose any other device.
+
+---
+
+## License
+
+MIT — see [LICENSE](LICENSE).
