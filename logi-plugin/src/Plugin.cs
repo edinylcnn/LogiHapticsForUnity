@@ -13,7 +13,6 @@ namespace Loupedeck.LogiHapticsUnityPlugin
         public LogiHapticsUnityPlugin()
         {
             PluginLog.Init(this.Log);
-            PluginResources.Init(this.Assembly);
         }
 
         public override void Load()
