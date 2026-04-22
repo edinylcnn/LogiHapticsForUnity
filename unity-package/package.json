@@ -1,6 +1,6 @@
 {
   "name": "com.logihapticsunity",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "displayName": "LogiHapticsUnity",
   "description": "Tek satırla MX Master 4 haptic feedback — Logi Options+ plugin üzerinden Named Pipe.",
   "unity": "2021.3",
