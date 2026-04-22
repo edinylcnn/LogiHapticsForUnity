@@ -47,13 +47,32 @@ Build tamamlanınca csproj otomatik olarak Logi Plugin Service'in `Plugins/` diz
 
 ## Paketleme (.lplug4)
 
+Tek komutla:
+
 ```bash
 cd logi-plugin/src
 dotnet build -c Release
-logiplugintool pack ../bin/Release
+logiplugintool pack ../bin/Release ../build/LogiHapticsUnity_0.0.1.lplug4
 ```
 
 Çıktı: `logi-plugin/build/LogiHapticsUnity_<version>.lplug4`. Çift tıklayarak kurulabilir.
+
+## Release (GitHub'a yayınlama)
+
+PluginApi.dll Logi Options+ ile geldiği için CI'da üretilemiyor — release'i lokal script ile keseriz. Repo root'ta:
+
+```bash
+./scripts/release-plugin.sh 0.1.0
+```
+
+Script şunları yapar:
+1. Manifest version'unu senkronize eder, commit + push
+2. `dotnet build -c Release`
+3. `logiplugintool pack` → `.lplug4`
+4. `plugin-v0.1.0` tag'ı oluşturup push eder
+5. `gh release create` ile GitHub Release açar ve `.lplug4`'ü asset olarak ekler
+
+Gereksinimler: `dotnet`, `logiplugintool`, `gh` (GitHub CLI), `git` yüklü ve çalışma ağacı temiz olmalı.
 
 ## Nasıl Çalışır?
 

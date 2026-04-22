@@ -3,44 +3,13 @@ name: Release
 on:
   push:
     tags:
-      - 'plugin-v*'
       - 'unity-v*'
 
+# Plugin releases are cut locally with scripts/release-plugin.sh because
+# PluginApi.dll ships with Logi Options+ and cannot be obtained in CI.
+
 jobs:
-  # Plugin builds require PluginApi.dll from a local Logi Plugin Service install,
-  # which cannot be reproduced in CI. We open a draft release here; the maintainer
-  # runs `dotnet build -c Release` + `logiplugintool pack` locally and uploads
-  # the resulting LogiHapticsUnity_x.y.lplug4 asset.
-  plugin:
-    if: startsWith(github.ref, 'refs/tags/plugin-v')
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Open draft release
-        uses: softprops/action-gh-release@v2
-        with:
-          draft: true
-          name: Logi Plugin ${{ github.ref_name }}
-          generate_release_notes: true
-          body: |
-            ## Manual upload required
-
-            Build + package locally (needs Logi Options+ installed for `PluginApi.dll`):
-
-            ```bash
-            cd logi-plugin/src
-            dotnet build -c Release
-            dotnet tool install --global LogiPluginTool   # once
-            logiplugintool pack ../bin/Release
-            ```
-
-            Upload the generated `LogiHapticsUnity_*.lplug4` to this release, then publish.
-
   unity:
-    if: startsWith(github.ref, 'refs/tags/unity-v')
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -56,14 +25,34 @@ jobs:
           mv "$tmp" unity-package/package.json
           cat unity-package/package.json
 
+      - name: Commit version bump if needed
+        shell: bash
+        run: |
+          if [ -n "$(git status --porcelain unity-package/package.json)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add unity-package/package.json
+            git commit -m "Bump unity-package to ${GITHUB_REF_NAME#unity-v}"
+            git push origin HEAD:main
+          fi
+
       - name: Publish release
         uses: softprops/action-gh-release@v2
         with:
           name: Unity Package ${{ github.ref_name }}
           generate_release_notes: true
           body: |
-            Unity Package Manager → Add package from git URL:
+            Unity Package Manager → `+` → Add package from git URL:
 
             ```
             https://github.com/edinylcnn/LogiHapticsForUnity.git?path=/unity-package#${{ github.ref_name }}
             ```
+
+            Kullanım:
+
+            ```csharp
+            using LogiHaptics;
+            LogiHapticsUnity.Trigger(HapticEvent.Click);
+            ```
+
+            Plugin (`.lplug4`) kurulumu için `plugin-v*` release'ine bak.
