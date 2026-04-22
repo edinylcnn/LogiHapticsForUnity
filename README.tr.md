@@ -42,6 +42,8 @@ HapticsBridge.Trigger(HapticEvent.Click);
    **Git URL (CLI'sız):** Package Manager → `+` → Add package from git URL →
    `https://github.com/edinylcnn/HapticBridgeForUnity.git?path=/unity-package`
 
+   Unity 2022+, scoped registry'den gelen her pakette (tüm OpenUPM paketleri dahil) "Missing signature" uyarısı gösterir. **Install Anyway** bas — OpenUPM, Unity'nin özel sertifikası ile imzalama yapamaz, bu uyarı beklenen bir durumdur.
+
 4. İstediğin yerden çağır:
 
    ```csharp

@@ -20,6 +20,8 @@ openupm add com.edinylcnn.hapticbridge
 https://github.com/edinylcnn/HapticBridgeForUnity.git?path=/unity-package
 ```
 
+Unity 2022+ shows a "Missing signature" dialog for any OpenUPM package — click **Install Anyway**. This is a Unity-wide warning for 3rd-party scoped registries, not specific to this package.
+
 ## Usage
 
 ```csharp
