@@ -1,0 +1,26 @@
+{
+  "name": "com.logihapticsunity",
+  "version": "0.0.1",
+  "displayName": "LogiHapticsUnity",
+  "description": "Tek satırla MX Master 4 haptic feedback — Logi Options+ plugin üzerinden Named Pipe.",
+  "unity": "2021.3",
+  "keywords": [
+    "haptics",
+    "logitech",
+    "mx-master",
+    "input",
+    "feedback"
+  ],
+  "author": {
+    "name": "Edin Yalçın",
+    "url": "https://github.com/edinylcnn"
+  },
+  "license": "MIT",
+  "samples": [
+    {
+      "displayName": "Merge Game Example",
+      "description": "Örnek entegrasyon — merge event'lerinde haptic tetikleme.",
+      "path": "Samples~/MergeGameExample"
+    }
+  ]
+}

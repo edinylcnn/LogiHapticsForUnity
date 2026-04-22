@@ -1,0 +1,51 @@
+# Build artifacts
+logi-plugin/build/*.lplug4
+logi-plugin/bin/
+logi-plugin/obj/
+**/bin/
+**/obj/
+
+# Unity (scoped so we don't hide logi-plugin/build/)
+unity-package/Library/
+unity-package/Temp/
+unity-package/Logs/
+unity-package/UserSettings/
+**/[Ll]ibrary/
+**/[Tt]emp/
+**/[Ll]ogs/
+**/[Uu]ser[Ss]ettings/
+
+# Claude Code local config
+.claude/
+
+# Global gitignore compensations — Unity's Samples~ convention must be tracked
+!**/Samples~/
+!**/Samples~/**
+*.csproj
+*.sln
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity meta (keep .meta in unity-package/ — they're required for UPM)
+# (no global *.meta ignore — Unity package meta files must be committed)
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Secrets
+*.env
+*.local
