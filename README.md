@@ -9,10 +9,11 @@
 
 ## Vizyon
 
-Bir Unity geliştiricisi şu iki adımla haptic desteğini aktive eder:
+Bir Unity geliştiricisi şu adımlarla haptic desteğini aktive eder:
 
-1. GitHub Releases'ten `LogiHapticsUnity_x.y.lplug4` indir → çift tıkla (Logi Options+ kurar)
-2. Unity Package Manager'a `com.logihapticsunity` ekle → `LogiHapticsUnity.Trigger(HapticEvent.Click)` yaz
+1. [Logi Options+](https://www.logitech.com/software/logi-options-plus) kurulu olsun (MX Master 4 zaten kullanıcıdaysa kurulu)
+2. GitHub Releases'ten `LogiHapticsUnity_x.y.lplug4` indir → çift tıkla → Logi Options+ plugin'i kurar
+3. Unity Package Manager'a `com.logihapticsunity` ekle → `LogiHapticsUnity.Trigger(HapticEvent.Click)` yaz
 
 Firewall onayı yok. Domain yok. Sertifika yok. Port ayarı yok.
 

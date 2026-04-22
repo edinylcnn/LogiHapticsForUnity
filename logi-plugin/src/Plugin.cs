@@ -1,38 +1,59 @@
-using System;
-
-namespace LogiHapticsUnity.Plugin
+namespace Loupedeck.LogiHapticsUnityPlugin
 {
-    // Entry point for the Logi Options+ plugin.
-    // TODO: Inherit from the Logi Actions SDK plugin base class and wire its lifecycle
-    // hooks (OnLoad/OnUnload) to Start()/Dispose() below once the SDK is added.
-    public sealed class LogiHapticsUnityPlugin : IDisposable
-    {
-        PipeServer _server;
+    using System;
+    using System.Threading.Tasks;
 
-        public void Start()
+    public class LogiHapticsUnityPlugin : Plugin
+    {
+        public override Boolean UsesApplicationApiOnly => true;
+        public override Boolean HasNoApplication => true;
+
+        PipeServer _pipe;
+
+        public LogiHapticsUnityPlugin()
         {
-            _server = new PipeServer(HandleEvent);
-            _server.Start();
-            Console.WriteLine($"[LogiHapticsUnity] pipe server started on '{PipeServer.PipeName}'");
+            PluginLog.Init(this.Log);
+            PluginResources.Init(this.Assembly);
+        }
+
+        public override void Load()
+        {
+            RegisterHapticEvents();
+            _pipe = new PipeServer(HandleEvent);
+            _pipe.Start();
+            PluginLog.Info($"LogiHapticsUnity pipe server listening on '{PipeServer.PipeName}'");
+            this.OnPluginStatusChanged(Loupedeck.PluginStatus.Normal, null);
+        }
+
+        public override void Unload()
+        {
+            _pipe?.Dispose();
+            _pipe = null;
+        }
+
+        void RegisterHapticEvents()
+        {
+            // Logi Options+ requires each haptic waveform to be registered as a plugin event.
+            foreach (var waveform in HapticMapper.Waveforms)
+            {
+                this.PluginEvents.AddEvent(waveform, waveform, null);
+            }
         }
 
         void HandleEvent(string eventName)
         {
             if (!HapticMapper.TryGetWaveform(eventName, out var waveform))
             {
-                Console.WriteLine($"[LogiHapticsUnity] unknown event: {eventName}");
+                PluginLog.Warning($"unknown event from pipe: {eventName}");
                 return;
             }
-            PlayHaptic(waveform);
-        }
 
-        void PlayHaptic(string waveformId)
-        {
-            // TODO: Replace with Logi Actions SDK haptic trigger call, e.g.
-            //   _sdk.Device.PlayHaptic(waveformId);
-            Console.WriteLine($"[LogiHapticsUnity] play haptic: {waveformId}");
+            // RaiseEvent drives the actual haptic pulse on the paired device (MX Master 4).
+            Task.Run(() =>
+            {
+                try { this.PluginEvents.RaiseEvent(waveform); }
+                catch (Exception ex) { PluginLog.Error(ex, $"haptic raise failed: {waveform}"); }
+            });
         }
-
-        public void Dispose() => _server?.Dispose();
     }
 }

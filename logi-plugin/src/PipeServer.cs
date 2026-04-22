@@ -1,11 +1,11 @@
-using System;
-using System.IO;
-using System.IO.Pipes;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace LogiHapticsUnity.Plugin
+namespace Loupedeck.LogiHapticsUnityPlugin
 {
+    using System;
+    using System.IO;
+    using System.IO.Pipes;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     public sealed class PipeServer : IDisposable
     {
         public const string PipeName = "LogiHapticsUnity";
@@ -48,14 +48,14 @@ namespace LogiHapticsUnity.Plugin
                         var trimmed = line.Trim();
                         if (trimmed.Length == 0) continue;
                         try { _onEvent(trimmed); }
-                        catch (Exception ex) { Console.Error.WriteLine($"[LogiHapticsUnity] handler error: {ex}"); }
+                        catch (Exception ex) { PluginLog.Error(ex, "pipe handler error"); }
                     }
                 }
                 catch (OperationCanceledException) { break; }
                 catch (Exception ex)
                 {
-                    Console.Error.WriteLine($"[LogiHapticsUnity] pipe error: {ex.Message}");
-                    await Task.Delay(250, ct).ConfigureAwait(false);
+                    PluginLog.Warning($"pipe error: {ex.Message}");
+                    try { await Task.Delay(250, ct).ConfigureAwait(false); } catch { break; }
                 }
             }
         }

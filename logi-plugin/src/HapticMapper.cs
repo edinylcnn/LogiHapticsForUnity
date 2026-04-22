@@ -1,11 +1,31 @@
-using System.Collections.Generic;
-
-namespace LogiHapticsUnity.Plugin
+namespace Loupedeck.LogiHapticsUnityPlugin
 {
+    using System.Collections.Generic;
+
     public static class HapticMapper
     {
-        // Event name (snake_case, from pipe) → Logi Actions SDK waveform id.
-        // Waveform ids follow the SDK's named haptic library; adjust as SDK exposes them.
+        // The 15 waveform ids exposed by the Logi Actions SDK haptic event system.
+        // Must mirror package/events/DefaultEventSource.yaml.
+        public static readonly string[] Waveforms =
+        {
+            "sharp_collision",
+            "sharp_state_change",
+            "knock",
+            "damp_collision",
+            "mad",
+            "ringing",
+            "subtle_collision",
+            "completed",
+            "jingle",
+            "damp_state_change",
+            "firework",
+            "happy_alert",
+            "wave",
+            "angry_alert",
+            "square"
+        };
+
+        // Generic event name (from Unity side) → Logi SDK waveform id.
         static readonly Dictionary<string, string> Map = new Dictionary<string, string>
         {
             { "click",          "subtle_collision" },
@@ -20,9 +40,16 @@ namespace LogiHapticsUnity.Plugin
         };
 
         public static bool TryGetWaveform(string eventName, out string waveform)
-            => Map.TryGetValue(eventName, out waveform);
+        {
+            // Accept direct waveform ids as well — lets Unity side bypass the enum.
+            if (System.Array.IndexOf(Waveforms, eventName) >= 0)
+            {
+                waveform = eventName;
+                return true;
+            }
+            return Map.TryGetValue(eventName, out waveform);
+        }
 
-        public static void Register(string eventName, string waveform)
-            => Map[eventName] = waveform;
+        public static void Register(string eventName, string waveform) => Map[eventName] = waveform;
     }
 }

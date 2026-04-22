@@ -1,0 +1,32 @@
+# Logi Options+ plugin manifest.
+# Schema reference: https://logitech.github.io/actions-sdk-docs/
+
+type: plugin4
+name: LogiHapticsUnity
+displayName: LogiHaptics for Unity
+description: >
+  Bridges Unity games to MX Master 4 haptic feedback. Unity sends event names
+  over a named pipe ("LogiHapticsUnity"); the plugin maps them to Logi Actions
+  SDK haptic waveforms.
+
+pluginFileName: LogiHapticsUnityPlugin.dll
+version: 0.0.1
+author: Edin Yalçın
+copyright: Copyright © 2026 Edin Yalçın. MIT License.
+
+pluginFolderWin: bin
+pluginFolderMac: bin
+
+# MX mice currently share the Loupedeck CT family capability set in the SDK.
+supportedDevices:
+  - LoupedeckCtFamily
+
+pluginCapabilities:
+  - HasHapticMapping
+
+minimumLoupedeckVersion: 6.2
+
+license: MIT
+licenseUrl: https://github.com/edinylcnn/LogiHapticsForUnity/blob/main/LICENSE
+supportPageUrl: https://github.com/edinylcnn/LogiHapticsForUnity/issues
+homePageUrl: https://github.com/edinylcnn/LogiHapticsForUnity

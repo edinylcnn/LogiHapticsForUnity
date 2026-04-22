@@ -2,15 +2,61 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>disable</Nullable>
-    <LangVersion>latest</LangVersion>
-    <AssemblyName>LogiHapticsUnity.Plugin</AssemblyName>
-    <RootNamespace>LogiHapticsUnity.Plugin</RootNamespace>
+    <RootNamespace>Loupedeck.LogiHapticsUnityPlugin</RootNamespace>
+    <AssemblyName>LogiHapticsUnityPlugin</AssemblyName>
+
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+
+    <!-- Logi Plugin Service install path holds PluginApi.dll. -->
+    <PluginApiDir Condition="$(OS) == 'Windows_NT'">C:\Program Files\Logi\LogiPluginService\</PluginApiDir>
+    <PluginApiDir Condition="$(OS) != 'Windows_NT'">/Applications/Utilities/LogiPluginService.app/Contents/MonoBundle/</PluginApiDir>
+
+    <!-- Dev-install location for .link sideloading. -->
+    <PluginDir Condition="$(OS) == 'Windows_NT'">$(LocalAppData)\Logi\LogiPluginService\Plugins\</PluginDir>
+    <PluginDir Condition="$(OS) != 'Windows_NT'">$(HOME)/Library/Application Support/Logi/LogiPluginService/Plugins/</PluginDir>
+
+    <BaseOutputPath>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)..\bin\'))</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)$(Configuration)\bin\</OutputPath>
+
+    <PluginShortName>LogiHapticsUnity</PluginShortName>
   </PropertyGroup>
 
-  <!--
-    TODO: Add Logi Actions SDK package/assembly reference once the SDK template is in place.
-    Docs: https://logitech.github.io/actions-sdk-docs/
-  -->
+  <ItemGroup>
+    <Reference Include="PluginApi">
+      <HintPath Condition="Exists('$(PluginApiDir)PluginApi.dll')">$(PluginApiDir)PluginApi.dll</HintPath>
+      <HintPath Condition="!Exists('$(PluginApiDir)PluginApi.dll')">..\lib\PluginApi.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Copy package metadata (manifest, events, icon) next to the built assembly. -->
+  <Target Name="CopyPackage" AfterTargets="PostBuildEvent">
+    <ItemGroup>
+      <PackageFiles Include="package\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(PackageFiles)" DestinationFolder="$(OutputPath)..\%(RecursiveDir)" />
+    <Message Text="package/ copied to $(OutputPath).." Importance="High" />
+  </Target>
+
+  <!-- Dev sideload: write a .link file pointing Logi Plugin Service at this build. -->
+  <Target Name="WriteDevLink" AfterTargets="PostBuildEvent" Condition="'$(CI)' == ''">
+    <MakeDir Directories="$(PluginDir)" />
+    <Exec Condition="$(OS) == 'Windows_NT'"
+          Command="echo $(BaseOutputPath)$(Configuration)\ &gt; &quot;$(PluginDir)$(PluginShortName).link&quot;" />
+    <Exec Condition="$(OS) != 'Windows_NT'"
+          Command="echo &quot;$(BaseOutputPath)$(Configuration)/&quot; &gt; &quot;$(PluginDir)$(PluginShortName).link&quot;" />
+    <Message Text="dev link: $(PluginDir)$(PluginShortName).link" Importance="High" />
+    <Exec Condition="$(OS) == 'Windows_NT'" Command="start loupedeck:plugin/$(PluginShortName)/reload" ContinueOnError="true" />
+    <Exec Condition="$(OS) != 'Windows_NT'" Command="open loupedeck:plugin/$(PluginShortName)/reload" ContinueOnError="true" />
+  </Target>
+
+  <Target Name="PluginClean" AfterTargets="CoreClean">
+    <Delete Condition="$(OS) == 'Windows_NT'" Files="$(PluginDir)$(PluginShortName).link" />
+    <Exec   Condition="$(OS) != 'Windows_NT'" Command="rm -f &quot;$(PluginDir)$(PluginShortName).link&quot;" />
+    <RemoveDir Directories="$(OutputPath)..\" />
+  </Target>
 
 </Project>
