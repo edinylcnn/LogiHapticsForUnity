@@ -45,7 +45,7 @@ jobs:
             Unity Package Manager → `+` → Add package from git URL:
 
             ```
-            https://github.com/edinylcnn/LogiHapticsForUnity.git?path=/unity-package#${{ github.ref_name }}
+            https://github.com/edinylcnn/HapticBridgeForUnity.git?path=/unity-package#${{ github.ref_name }}
             ```
 
             Usage:

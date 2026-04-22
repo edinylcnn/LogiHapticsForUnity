@@ -29,6 +29,6 @@ icon256x256: Icon256x256.png
 minimumLoupedeckVersion: 6.2
 
 license: MIT
-licenseUrl: https://github.com/edinylcnn/LogiHapticsForUnity/blob/main/LICENSE
-supportPageUrl: https://github.com/edinylcnn/LogiHapticsForUnity/issues
-homePageUrl: https://github.com/edinylcnn/LogiHapticsForUnity
+licenseUrl: https://github.com/edinylcnn/HapticBridgeForUnity/blob/main/LICENSE
+supportPageUrl: https://github.com/edinylcnn/HapticBridgeForUnity/issues
+homePageUrl: https://github.com/edinylcnn/HapticBridgeForUnity

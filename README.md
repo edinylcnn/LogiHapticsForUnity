@@ -25,11 +25,11 @@ HapticsBridge.Trigger(HapticEvent.Click);
 ## Install (4 steps)
 
 1. Make sure **[Logi Options+](https://www.logitech.com/software/logi-options-plus)** is installed (it ships with the MX Master 4).
-2. Download **`HapticBridgeForUnity_x.y.lplug4`** from [Releases](https://github.com/edinylcnn/LogiHapticsForUnity/releases) → double-click → Logi Options+ installs the companion plugin.
+2. Download **`HapticBridgeForUnity_x.y.lplug4`** from [Releases](https://github.com/edinylcnn/HapticBridgeForUnity/releases) → double-click → Logi Options+ installs the companion plugin.
 3. In Unity, open **Package Manager** → `+` → **Add package from git URL**:
 
    ```
-   https://github.com/edinylcnn/LogiHapticsForUnity.git?path=/unity-package
+   https://github.com/edinylcnn/HapticBridgeForUnity.git?path=/unity-package
    ```
 
 4. Call it from anywhere:

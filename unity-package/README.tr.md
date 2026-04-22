@@ -11,7 +11,7 @@ Unity tarafındaki UPM paketi. Windows'ta Named Pipe, macOS/Linux'ta Unix Domain
 Unity Package Manager → `+` → **Add package from git URL**:
 
 ```
-https://github.com/edinylcnn/LogiHapticsForUnity.git?path=/unity-package
+https://github.com/edinylcnn/HapticBridgeForUnity.git?path=/unity-package
 ```
 
 ## Kullanım

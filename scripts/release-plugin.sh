@@ -66,4 +66,4 @@ gh release create "$TAG" "$OUT_FILE" \
   --notes "Double-click the .lplug4 asset to install in Logi Options+. See repo root README for details."
 
 echo
-echo "done — https://github.com/edinylcnn/LogiHapticsForUnity/releases/tag/$TAG"
+echo "done — https://github.com/edinylcnn/HapticBridgeForUnity/releases/tag/$TAG"
