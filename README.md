@@ -14,6 +14,7 @@
   <a href="https://openupm.com/packages/com.edinylcnn.hapticbridge/"><img src="https://img.shields.io/npm/v/com.edinylcnn.hapticbridge?label=openupm&registry_uri=https://package.openupm.com&color=brightgreen" alt="openupm" /></a>
   <a href="https://github.com/edinylcnn/HapticBridgeForUnity/releases"><img src="https://img.shields.io/github/v/release/edinylcnn/HapticBridgeForUnity?filter=plugin-*&label=plugin" alt="plugin release" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/edinylcnn/HapticBridgeForUnity" alt="license" /></a>
+  <a href="https://marketplace.logi.com/plugin/HapticBridgeForUnity/en"><img src="https://img.shields.io/badge/Logi%20Marketplace-listed-0066CC" alt="Logi Marketplace" /></a>
 </p>
 
 > One-line haptic feedback for Unity games on the **Logitech MX Master 4** — no ports, no certificates, no domain setup.
@@ -99,7 +100,7 @@ The repo is a monorepo:
 
 | Folder | Contents | Ships as |
 |---|---|---|
-| [`logi-plugin/`](logi-plugin/) | Logi Options+ companion plugin (C#) | `.lplug4` — GitHub Releases |
+| [`logi-plugin/`](logi-plugin/) | Logi Options+ companion plugin (C#) | `.lplug4` — [GitHub Releases](https://github.com/edinylcnn/HapticBridgeForUnity/releases) · [Logi Marketplace](https://marketplace.logi.com/plugin/HapticBridgeForUnity/en) |
 | [`unity-package/`](unity-package/) | Unity Package — `com.edinylcnn.hapticbridge` | Unity Package Manager (git URL) |
 
 ### Why Unix Domain Socket on macOS/Linux?
